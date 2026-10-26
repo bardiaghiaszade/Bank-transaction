@@ -1,132 +1,118 @@
-# Simple Banking System
+# Bank Transaction System
 
-A small banking application built with Python, SQLite, and Tkinter.
+A simple desktop banking simulation built with Python, Tkinter, and SQLite. The application lets you select users, view their balances, transfer credits between users, and add new users with an initial balance of 100 credits.
 
-The application allows users to transfer money between people stored in an SQLite database through a graphical user interface.
+> **Note:** This is an educational project, not real banking software. It does not provide authentication, authorization, encryption, or production-grade financial controls.
 
 ## Features
 
-- View users stored in the database
-- Select sender and receiver from dropdown menus
-- Transfer money between accounts
-- Automatic balance updates in SQLite
-- Error handling for:
-  - Invalid amounts
-  - Missing users
-  - Insufficient funds
+- **View user balances:** The current balance is displayed for the selected sender and receiver.
+- **Transfer credits:** Transfer a specified amount from one user to another.
+- **Add users:** Create a new user from the GUI. New users start with **100 credits**.
+- **Persistent storage:** User information and balances are stored in an SQLite database.
+- **Input validation:** The application rejects invalid amounts, non-positive transfers, transfers to the same user, transfers to unknown users, and transfers that exceed the sender's balance.
+- **Duplicate-name check:** A new user cannot be added if a user with the same name already exists, ignoring letter case.
+- **Simple desktop interface:** The interface is built with Python's standard `tkinter` library.
+
+## Requirements
+
+- Python 3
+- Tkinter (usually included with standard Python installations)
+- SQLite support (included with Python)
+
+No third-party Python packages are required.
 
 ## Project Structure
 
 ```text
-transaction/
-│
-├── after.db      # SQLite database
-├── logic.py      # Database and transaction logic
-├── gui.py        # Tkinter graphical interface
-└── README.md
+Bank-transaction/
+├── gui.py          # Tkinter user interface and button actions
+├── logic.py        # Database queries, user creation, and transfer logic
+├── database.db     # SQLite database containing the people table
+├── README.md       # Project documentation
+└── .gitignore      # Files excluded from Git
 ```
 
-## Database Structure
+## Getting Started
 
-Database: `after.db`
+### 1. Get the project
 
-Table: `people`
-
-| Column | Type |
-|----------|----------|
-| id | INTEGER PRIMARY KEY |
-| name | TEXT |
-| money | REAL |
-
-Example:
-
-| id | name | money |
-|----|------|--------|
-| 1 | Alice | 1000 |
-| 2 | Bob | 500 |
-| 3 | Charlie | 750 |
-
-## Requirements
-
-- Python 3.10+ (or newer)
-- Tkinter (usually included with Python)
-- SQLite3 (included with Python)
-
-## Installation
-
-Clone or download the project.
-
-Place the files in the same directory:
-
-```text
-after.db
-logic.py
-gui.py
-```
-
-## Running the Application
-
-Open a terminal in the project folder:
+Clone the repository or download the project files and extract them.
 
 ```bash
-cd path/to/project
+git clone https://github.com/bardiaghiaszade/Bank-transaction.git
+cd Bank-transaction
 ```
 
-Run:
+If you downloaded a ZIP file instead, open a terminal in the extracted project directory.
+
+### 2. Check the database
+
+The application expects `database.db` to be in the same directory as `logic.py`. The database must contain a `people` table with these columns:
+
+| Column | Purpose |
+|---|---|
+| `id` | User identifier |
+| `name` | User's name |
+| `money` | User's balance in credits |
+
+The supplied database includes example users. Keep a backup before changing or replacing it.
+
+### 3. Run the application
+
+From the project directory, run:
 
 ```bash
 python gui.py
 ```
 
-A window will open where you can:
+On Windows, this may also work:
 
-1. Select a sender.
-2. Select a receiver.
-3. Enter an amount.
-4. Click **Transfer**.
+```powershell
+py .\gui.py
+```
 
-## How It Works
+A window titled **Bank System** should open.
 
-### logic.py
+## How to Use
 
-Contains all database operations:
+### View balances
 
-- Retrieve users from the database
-- Validate transfers
-- Update balances
+1. Choose a user from the **Sender** dropdown.
+2. The sender's current balance appears underneath the dropdown.
+3. Choose a user from the **Receiver** dropdown.
+4. The receiver's current balance appears underneath that dropdown.
 
-### gui.py
+### Transfer credits
 
-Contains the Tkinter interface:
+1. Select the sender and receiver.
+2. Enter the amount in the **Amount** field.
+3. Click **Transfer**.
+4. If the transfer succeeds, a confirmation message appears and both displayed balances are refreshed.
 
-- Dropdown menus for sender and receiver
-- Amount input field
-- Transfer button
-- Success and error messages
+A transfer is rejected if the amount is invalid, zero or negative, the sender and receiver are the same, either user cannot be found, or the sender does not have enough credits.
 
-## Example Workflow
+### Add a user
 
-1. Alice has 1000.
-2. Bob has 500.
-3. Transfer 200 from Alice to Bob.
+1. Click **Add User**.
+2. Enter the new user's name.
+3. On success, the user is saved to the database with an initial balance of **100 credits** and becomes available in the dropdown menus.
 
-Result:
+Names cannot be empty, and duplicate names are rejected without regard to letter case.
 
-| Name | Balance |
-|--------|--------|
-| Alice | 800 |
-| Bob | 700 |
+## Implementation Notes
 
-## Future Improvements
+- `gui.py` creates the Tkinter window, dropdown menus, balance labels, amount input, and action buttons.
+- `logic.py` contains the database operations:
+  - `get_users()` returns user names.
+  - `get_balance(name)` returns a user's current balance.
+  - `add_user(name)` inserts a user with 100 credits.
+  - `transfer(sender, receiver, amount)` validates and performs a transfer.
+- SQLite changes are committed after a user is added or a transfer is completed.
+- The database path is resolved relative to `logic.py`, so the application does not depend on the terminal's current working directory.
 
-- Transaction history
-- Account creation
-- Account deletion
-- Login system
-- Balance display
-- Modern UI design
-- Export transaction logs
+## Limitations
 
-## License
-
-This project is open-source and intended for educational purposes.
+- There is no login system or access control; anyone who can run the application can use its actions.
+- Balances are stored as floating-point values, which are not ideal for real financial calculations.
+- The database table must already exist; the application does not
